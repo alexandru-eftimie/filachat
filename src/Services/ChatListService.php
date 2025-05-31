@@ -192,28 +192,31 @@ class ChatListService
                     $receiverableId = (int) $matches[1];
                 }
 
-                $foundConversation = FilaChatConversation::query()
-                    ->where(function ($query) use ($receiverableId, $receiverableType) {
-                        $query->where(function ($query) {
-                            $query->where('senderable_id', auth()->id())
-                                ->where('senderable_type', auth()->user()::class);
+                $foundConversation = null;
+                if(config('filachat.allow_multiple_conversations', false)) {
+                    $foundConversation = FilaChatConversation::query()
+                        ->where(function ($query) use ($receiverableId, $receiverableType) {
+                            $query->where(function ($query) {
+                                $query->where('senderable_id', auth()->id())
+                                    ->where('senderable_type', auth()->user()::class);
+                            })
+                                ->orWhere(function ($query) use ($receiverableId, $receiverableType) {
+                                    $query->where('senderable_id', $receiverableId)
+                                        ->where('senderable_type', $receiverableType);
+                                });
                         })
-                            ->orWhere(function ($query) use ($receiverableId, $receiverableType) {
-                                $query->where('senderable_id', $receiverableId)
-                                    ->where('senderable_type', $receiverableType);
-                            });
-                    })
-                    ->where(function ($query) use ($receiverableId, $receiverableType) {
-                        $query->where(function ($query) use ($receiverableId, $receiverableType) {
-                            $query->where('receiverable_id', $receiverableId)
-                                ->where('receiverable_type', $receiverableType);
+                        ->where(function ($query) use ($receiverableId, $receiverableType) {
+                            $query->where(function ($query) use ($receiverableId, $receiverableType) {
+                                $query->where('receiverable_id', $receiverableId)
+                                    ->where('receiverable_type', $receiverableType);
+                            })
+                                ->orWhere(function ($query) {
+                                    $query->where('receiverable_id', auth()->id())
+                                        ->where('receiverable_type', auth()->user()::class);
+                                });
                         })
-                            ->orWhere(function ($query) {
-                                $query->where('receiverable_id', auth()->id())
-                                    ->where('receiverable_type', auth()->user()::class);
-                            });
-                    })
-                    ->first();
+                        ->first();
+                }
 
                 if (! $foundConversation) {
                     $conversation = FilaChatConversation::query()->create([
