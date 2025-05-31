@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use InvalidArgumentException;
 use JaOcero\FilaChat\Events\FilaChatMessageEvent;
+use JaOcero\FilaChat\Models\FilaChatAgent;
 use JaOcero\FilaChat\Models\FilaChatConversation;
 use JaOcero\FilaChat\Models\FilaChatMessage;
 use JaOcero\FilaChat\Pages\FilaChat;
@@ -180,6 +181,20 @@ class ChatListService
     {
         try {
             DB::transaction(function () use ($data) {
+                if(!isset($data['receiverable_id'])) {
+                    if(
+                        !config('filachat.enable_roles', false) ||
+                        auth()->user()->isAgent() ||
+                        !config('filachat.skip_agent_selection', false)
+                    ) {
+                        throw new InvalidArgumentException('Receivable ID is required');
+                    }
+
+                    $agent = FilaChatAgent::query()->inRandomOrder()->first();
+
+                    $data['receiverable_id'] = "agent_" . $agent->getKey();
+
+                }
                 $receiverableId = $data['receiverable_id'];
 
                 if (preg_match('/^user_(\d+)$/', $receiverableId, $matches)) {

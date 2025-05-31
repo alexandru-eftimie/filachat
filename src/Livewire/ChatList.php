@@ -66,6 +66,13 @@ class ChatList extends Component implements HasActions, HasForms
             ])
             ->form([
                 Forms\Components\Select::make('receiverable_id')
+                    ->visible(function () use ($isRoleEnabled, $isAgent) {
+                        if ($isRoleEnabled && !$isAgent && config('filachat.skip_agent_selection')) {
+                            return false;
+                        }
+
+                        return true;
+                    })
                     ->label(function () use ($isRoleEnabled, $isAgent) {
                         if ($isRoleEnabled) {
                             if ($isAgent) {

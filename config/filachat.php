@@ -27,6 +27,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Skip Agent Selection
+    |--------------------------------------------------------------------------
+    |
+    | Enabling this option will not let the user role choose an agent to chat with,
+    | instead one will be allocated randomly
+    |
+    */
+    'skip_agent_selection' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Show menu item
     |--------------------------------------------------------------------------
     |
