@@ -245,7 +245,6 @@ class ChatBox extends Component implements HasForms
             if ($data['conversationId'] && $data['conversationId'] === $this->selectedConversation?->id) {
 
                 $message = FilaChatMessage::find($data['messageId']);
-
                 $this->conversationMessages->prepend($message);
 
                 if ($message->receiverable_id === auth()->id() && $message->receiverable_type === auth()->user()::class) {

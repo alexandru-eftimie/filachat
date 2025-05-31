@@ -208,7 +208,7 @@ class ChatListService
                 }
 
                 $foundConversation = null;
-                if(config('filachat.allow_multiple_conversations', false)) {
+                if(!config('filachat.allow_multiple_conversations', false)) {
                     $foundConversation = FilaChatConversation::query()
                         ->where(function ($query) use ($receiverableId, $receiverableType) {
                             $query->where(function ($query) {
