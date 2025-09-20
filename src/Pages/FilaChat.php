@@ -41,8 +41,8 @@ class FilaChat extends Page
     {
         if (config('filachat.navigation_display_unread_messages_count')) {
 
-            static $count = 0;
-            if ($count > 0) {
+            static $count = null;
+            if (!is_null($count)) {
                 return $count;
             }
 
